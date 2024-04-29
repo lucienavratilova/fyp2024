@@ -4,6 +4,7 @@
 
 In this project you will learn to measure features in images of skin lesions, and predict the diagnosis (for example, melanoma) from these features in an automatic way. You will do things like:
 
+
 * Use Github to maintain your Python code
 * Explore the dataset
 * Segment images by hand
