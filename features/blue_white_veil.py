@@ -25,5 +25,3 @@ def blue_white_veil(image_path, mask_path):
     
     result = 1 if coverage_ratio > 0 else 0 # if blue-white veil detected, return 1
     return result
-
- kokot

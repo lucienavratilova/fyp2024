@@ -69,22 +69,22 @@ def get_slic_visual(image, mask):
     # Dictionary with pre-defined colors (top1 from each group or top2)
     color_dict = {
             'ACK1':[(115, 107, 112),0],
-            'ACK2':[(139, 109, 100),0],
+            #'ACK2':[(139, 109, 100),0],
 
             'BCC1':[(153, 136, 130),0],
-            'BCC2':[(159, 149, 150),0],
+            #'BCC2':[(159, 149, 150),0],
 
             'MEL1':[(186, 151, 138),0],
-            'MEL2':[(148, 104, 88),0],
+            #'MEL2':[(148, 104, 88),0],
 
             'NEV1':[(173, 173, 171),0],
-            'NEV2':[(179, 167, 167),0],
+            #'NEV2':[(179, 167, 167),0],
 
             'SCC1':[(156, 109, 121),0],
-            'SCC2':[(153, 101, 111),0],
+            #'SCC2':[(153, 101, 111),0],
 
             'SEK1':[(173, 140, 113),0],
-            'SEK2':[(195, 170, 141),0] 
+            #'SEK2':[(195, 170, 141),0] 
     }
 
     # Iterate through unique segments identified by the SLIC algorithm
@@ -144,8 +144,8 @@ def get_slic_visual(image, mask):
     
 
 # Read image examples
-img = cv2.imread('good_bad_images\ACK\good\images\PAT_26_37_865.png')
-mask = cv2.imread('good_bad_images\ACK\good\masks\PAT_26_37_865_mask.png')
+img = cv2.imread('good_bad_images\SEK\good\images\PAT_107_160_609.png')
+mask = cv2.imread('good_bad_images\SEK\good\masks\PAT_107_160_609_mask.png')
 
 print(get_slic_visual(img,mask))
 

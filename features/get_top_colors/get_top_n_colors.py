@@ -65,7 +65,8 @@ def get_colors(images, masks, group_name):
 
     # Count all colors and select top n
     color_counts = Counter(all_colors)
-    most_common_colors = color_counts.most_common(2)
+    top_colors = 5
+    most_common_colors = color_counts.most_common(top_colors)
 
     # Calculate the total number of colors
     total_color_count = sum(color_counts.values())
@@ -77,21 +78,21 @@ def get_colors(images, masks, group_name):
     print(most_common_colors_relative)
 
     # Plot and saving plot as png
-    '''
+
     plt.figure(figsize=(10, 5))
     plt.bar(range(len(most_common_colors_relative)), [count for _, count in most_common_colors_relative],
         color=[f'#{int(color[0]):02x}{int(color[1]):02x}{int(color[2]):02x}' for color, _ in most_common_colors_relative])
     plt.xticks(range(len(most_common_colors_relative)), [f'({color[0]}, {color[1]}, {color[2]})' for color, _ in most_common_colors_relative], rotation=45)
     plt.xlabel('Colors')
     plt.ylabel('Relative Frequency')
-    plt.title(f'Top 10 most common colors in {group_name}')
+    plt.title(f'Top {top_colors} most common colors in {group_name}')
     plt.subplots_adjust(bottom=0.2)  
     plt.savefig(f'features\\get_top_colors\\100segments\\{group_name}_top10_100segments.png', dpi=300, bbox_inches='tight')
 
     # Optional show each plot
     #plt.show()
     
-    '''
+    
 
 
 # Define paths to images and masks
