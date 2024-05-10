@@ -18,6 +18,7 @@ def classify(img, mask):
 
     # Load the trained classifier
     classifier = pickle.load(open("groupXY_classifier.sav", "rb"))
+    x = x.reshape(1, -1)
 
     # Use it on this example to predict the label AND posterior probability
     pred_label = classifier.predict(x)
@@ -27,5 +28,10 @@ def classify(img, mask):
     # print('predicted probability is ', pred_prob)
     return pred_label, pred_prob
 
+
+img = "data/test/images/PAT_48_74_402.png"
+mask = "data/test/masks/PAT_48_74_402_mask.png"
+
+print(classify(img, mask)[1])
 
 # The TAs will call the function above in a loop, for external test images/masks

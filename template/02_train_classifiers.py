@@ -41,6 +41,7 @@ label = np.array(df["diagnostic"])
 # Categorize as cancer or non-cancer
 cancer_types = ["MEL", "SCC", "BCC"]  # Cancerous diagnoses
 y = np.isin(label, cancer_types)  # True for cancer, False for non-cancer
+print(y[0])
 patient_id = df["patient_id"]
 
 
