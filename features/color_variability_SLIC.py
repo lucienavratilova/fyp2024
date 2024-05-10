@@ -5,24 +5,11 @@ from skimage.segmentation import slic, mark_boundaries
 from skimage.color import label2rgb
 from skimage.measure import regionprops
 import cv2
-
-# CHECKLIST
-# Re-calibrate colors: Waiting for David to re-do masks
-
-
-
-### Can be changed:
-# threshold_for_manhatten = 50. Diviation from defined color
-# n_segments=100. how many segments will be created from lession
-
-
-
-Cancer_groups = ['BCC', 'SCC', 'MEL']
-NonCancer_groups = ['SEK', 'ACK', 'NEV']
+import math
 
 def convert_to_rgb(image):
     '''
-    Function to convert RGBA to RGB (4channels to 3 channels)
+    Function to convert RGBA to RGB (4channels to 3 channels).
     '''
     return image[:, :, :3]
 
@@ -43,6 +30,12 @@ def manhatten(true_color, pixel_color):
         '''
         return np.sum(np.abs(true_color - pixel_color))
 
+def proportion_cancel(marked_count, all_segments):
+    '''
+    Function to calculate probability of cancer in the image
+    '''
+    return round((marked_count/all_segments), 2)
+
 def get_slic_visual(image, mask):
     '''
     This function will use slic alg. to segment the image where is masked. Then It will calculate
@@ -52,9 +45,9 @@ def get_slic_visual(image, mask):
     Input: Image and mask
     Output: Group with the most color matches
     '''
-
+    not_match = 0
     # Set threshold for manhatten function. Default 100
-    threshold_for_manhatten = 50
+    threshold_for_manhatten = 100
 
     # Check if image is in RGBA. If true, convert it to RGB
     if image.shape[-1] == 4:
@@ -64,47 +57,51 @@ def get_slic_visual(image, mask):
     mask = preprocess_mask(mask)
 
     # Apply SLIC algorithm
-    segments_slic = slic(image, n_segments=100, compactness=30, sigma=1, start_label=1, mask=mask)
-
+    segments_slic = slic(image, n_segments=100, compactness=10, sigma=1, mask=mask)
     # Dictionary with pre-defined colors (top1 from each group or top2)
     color_dict = {
-            'ACK1':[(115, 107, 112),0],
-            #'ACK2':[(139, 109, 100),0],
-
-            'BCC1':[(153, 136, 130),0],
-            #'BCC2':[(159, 149, 150),0],
-
-            'MEL1':[(186, 151, 138),0],
-            #'MEL2':[(148, 104, 88),0],
-
-            'NEV1':[(173, 173, 171),0],
-            #'NEV2':[(179, 167, 167),0],
-
-            'SCC1':[(156, 109, 121),0],
-            #'SCC2':[(153, 101, 111),0],
-
-            'SEK1':[(173, 140, 113),0],
-            #'SEK2':[(195, 170, 141),0] 
+            'CANCER1':[(46, 50, 49),0],
+            'CANCER2':[(116, 96, 80),0],
+            'CANCER3':[(42, 44, 43),0],
+            'CANCER4':[(157, 137, 112),0],
+            'CANCER5':[(112, 93, 82),0],
+            'CANCER6':[(136, 117, 105),0],
+            'CANCER7':[(116, 93, 79),0],
+            'CANCER8':[(93, 71, 61),0],
+            'CANCER9':[(90, 76, 71),0],
+            'CANCER10':[(97, 80, 75),0],
+            'NONCANCER1':[(198, 138, 109),0],
+            'NONCANCER2':[(124, 76, 56),0],
+            'NONCANCER3':[(108, 66, 48),0],
+            'NONCANCER4':[(124, 78, 60),0],
+            'NONCANCER5':[(151, 105, 91),0],
+            'NONCANCER6':[(120, 73, 53),0],
+            'NONCANCER7':[(97, 70, 58),0],
+            'NONCANCER8':[(135, 82, 58),0],
+            'NONCANCER9':[(92, 65, 51),0],
+            'NONCANCER10':[(136, 82, 60),0]
     }
 
-    # Iterate through unique segments identified by the SLIC algorithm
     for segment in np.unique(segments_slic):
-        # If segment in non mask area (pixel in mask = 0), then dont do calculations
-        if np.sum(mask[segments_slic == segment]) == 0:
-            continue
+        segment_mask = segments_slic == segment
+        if np.any(mask[segment_mask]):
+            segment_pixels = image[segment_mask]
+            mean_color = np.mean(segment_pixels, axis=0)
 
-        # Calculate the mean color of the current segment and convert to RGB
-        segment_pixels = image[segments_slic == segment]
-        mean_color = np.mean(segment_pixels, axis=0)
+            # Find the closest color match
+            closest_match = None
+            min_distance = float('inf')
+            for color_name, (color_value, count) in color_dict.items():
+                distance = manhatten(color_value, mean_color)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_match = color_name
 
-
-        # Compare mean color with pre-defined colors
-        for color_name, (color_value, count) in color_dict.items():
-            #print(f"Now comparing color_value:{color_value} with mean_color{mean_color}")
-            #print(f"manhatten distance is: {manhatten(color_value, mean_color)}")
-            if manhatten(color_value, mean_color) < threshold_for_manhatten:
-                color_dict[color_name][1] += 1
-
+            # Check if the closest color is within the acceptable threshold
+            if min_distance < threshold_for_manhatten:
+                color_dict[closest_match][1] += 1
+            else:
+                not_match += 1 
     # Print results
     for color_name, (color_value, count) in color_dict.items():
         print(f"Segments close to {color_name}: {count}")
@@ -133,21 +130,17 @@ def get_slic_visual(image, mask):
     # Get the key with the most color matches
     max_key = max(color_dict, key=lambda k: color_dict[k][1])
 
-    # Separate group name. SCC1 to SCC...
-    max_key_group = max_key[:-1]
+    cancer_segments_count = 0
+    non_cancer_segments_count = 0
+    for key, value in color_dict.items():
+        key_group = key[:-1]
+        if key_group == "CANCER":
+            cancer_segments_count += value[1]
+        else:
+            not_match += 1
 
-    # Return if in cancer group or not in cancer group
-    if max_key_group in Cancer_groups:
-        return 'Cancer'
-    else:
-        return 'Non-Cancer'
+    return proportion_cancel(cancer_segments_count, cancer_segments_count+not_match)
     
-
-# Read image examples
-img = cv2.imread('good_bad_images\SEK\good\images\PAT_107_160_609.png')
-mask = cv2.imread('good_bad_images\SEK\good\masks\PAT_107_160_609_mask.png')
-
-print(get_slic_visual(img,mask))
 
 
 
