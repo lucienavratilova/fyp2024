@@ -30,7 +30,7 @@ def manhatten(true_color, pixel_color):
         '''
         return np.sum(np.abs(true_color - pixel_color))
 
-def cancer_probability(marked_count, all_segments):
+def proportion_cancel(marked_count, all_segments):
     '''
     Function to calculate probability of cancer in the image
     '''
@@ -139,7 +139,7 @@ def get_slic_visual(image, mask):
         else:
             not_match += 1
 
-    return cancer_probability(cancer_segments_count, cancer_segments_count+not_match)
+    return proportion_cancel(cancer_segments_count, cancer_segments_count+not_match)
     
 
 
