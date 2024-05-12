@@ -1,3 +1,4 @@
+import pandas as pd
 import pickle  # for loading your trained classifier
 import sys
 import os
@@ -13,25 +14,36 @@ def classify(img, mask):
 
     # Resize the image etc, if you did that during training
 
+    model = pickle.load(open("logistic_regression_classifier.sav", "rb"))
     # Extract features (the same ones that you used for training)
     x = extract_features(img, mask)
+    # Define column names
+    columns = ['asymmetry', 'compactness','blue_white_veil','sd_r', 'sd_g', 'sd_b', 'mean_r', 'mean_g', 'mean_b', 
+            'peak_r', 'peak_g', 'peak_b', ]
+    single_row_df=   pd.DataFrame([x], columns=columns)
+    prediction = model.predict(single_row_df)
+    # print(x)
+    # x = x.reshape(1, -1)
 
-    # Load the trained classifier
-    classifier = pickle.load(open("groupXY_classifier.sav", "rb"))
-    x = x.reshape(1, -1)
+    # # Load the trained classifier
 
-    # Use it on this example to predict the label AND posterior probability
-    pred_label = classifier.predict(x)
-    pred_prob = classifier.predict_proba(x)
+    # # Use it on this example to predict the label AND posterior probability
+    pred_label = model.predict(single_row_df)
+    print(prediction)
+    pred_prob = model.predict_proba(single_row_df)
 
-    # print('predicted label is ', pred_label)
-    # print('predicted probability is ', pred_prob)
+    # # print('predicted label is ', pred_label)
+    # # print('predicted probability is ', pred_prob)
     return pred_label, pred_prob
 
 
-img = "data/test/images/PAT_48_74_402.png"
-mask = "data/test/masks/PAT_48_74_402_mask.png"
+images = os.listdir("data/test/images")
 
-print(classify(img, mask)[1])
+for image in images:
+    img_path = f"data/test/images/{image}"
+    mask = f"{image.split(".")[0]}_mask"
+    mask_path = f"data/test/masks/{mask}.png"
+
+    print(f"{image}::::{classify(img_path, mask_path)}")
 
 # The TAs will call the function above in a loop, for external test images/masks

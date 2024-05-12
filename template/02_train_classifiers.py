@@ -6,6 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GroupKFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 import pickle  # for saving/loading trained classifiers
 import os
 import sys
@@ -41,7 +42,6 @@ label = np.array(df["diagnostic"])
 # Categorize as cancer or non-cancer
 cancer_types = ["MEL", "SCC", "BCC"]  # Cancerous diagnoses
 y = np.isin(label, cancer_types)  # True for cancer, False for non-cancer
-print(y[0])
 patient_id = df["patient_id"]
 
 
@@ -69,9 +69,10 @@ f1_val = np.empty([num_folds, num_classifiers])
 
 for i, (train_index, val_index) in enumerate(group_kfold.split(x, y, patient_id)):
 
-    x_train = x[train_index, :]
+    x_train = x[train_index]
     y_train = y[train_index]
     x_val = x[val_index, :]
+
     y_val = y[val_index]
 
     for j, clf in enumerate(classifiers):
@@ -99,7 +100,7 @@ for j, clf_name in enumerate(["1-NN", "5-NN", "Logistic Regression"]):
         )
     )
 
-classifier = LogisticRegression(solver="sag", max_iter=9000)
+classifier = LogisticRegression(max_iter=100000, C=0.1, solver="sag")
 
 # It will be tested on external data, so we can try to maximize the use of our available data by training on
 # ALL of x and y
