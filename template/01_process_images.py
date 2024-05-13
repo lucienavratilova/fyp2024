@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from template.extract_features_train import *
 from helpers.get_data import get_data
 
@@ -30,23 +29,6 @@ df = pd.read_csv(metadata_path)
 num_images = len(data)
 
 
-# Set features for extraction to features.csv
-feature_names = [
-    "asymmetry",
-    "compactness",
-    "blue_white_veil",
-    "sd_r",
-    "sd_g",
-    "sd_b",
-    "mean_r",
-    "mean_g",
-    "mean_b",
-    "peak_r",
-    "peak_g",
-    "peak_b",
-    "patient_id",
-    "diagnostic",
-]
 dtype = [
     ("asymmetry", np.float16),
     ("compactness", np.float16),
