@@ -9,9 +9,7 @@ from template.extract_features import *  # our feature extraction
 
 
 # The function that should classify new images.
-# The image and mask are the same size, and are already loaded using plt.imread
-def classify(img, mask):
-
+def classify(img:str, mask:str):
     # Resize the image etc, if you did that during training
 
     model = pickle.load(open("logistic_regression_classifier.sav", "rb"))
@@ -21,19 +19,8 @@ def classify(img, mask):
     columns = ['asymmetry', 'compactness','blue_white_veil','sd_r', 'sd_g', 'sd_b', 'mean_r', 'mean_g', 'mean_b', 
             'peak_r', 'peak_g', 'peak_b', ]
     single_row_df=   pd.DataFrame([x], columns=columns)
-    prediction = model.predict(single_row_df)
-    # print(x)
-    # x = x.reshape(1, -1)
-
-    # # Load the trained classifier
-
-    # # Use it on this example to predict the label AND posterior probability
     pred_label = model.predict(single_row_df)
-    print(prediction)
     pred_prob = model.predict_proba(single_row_df)
-
-    # # print('predicted label is ', pred_label)
-    # # print('predicted probability is ', pred_prob)
     return pred_label, pred_prob
 
 
