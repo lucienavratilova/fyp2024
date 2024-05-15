@@ -12,7 +12,7 @@ from final.extract_features import *  # our feature extraction
 def classify(img:str, mask:str):
     # Resize the image etc, if you did that during training
 
-    model = pickle.load(open("logistic_regression_classifier.sav", "rb"))
+    model = pickle.load(open("classifier_group_b.sav", "rb"))
     # Extract features (the same ones that you used for training)
     x = extract_features(img, mask)
     # Define column names
