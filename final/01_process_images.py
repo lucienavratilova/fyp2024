@@ -70,4 +70,4 @@ df = pd.DataFrame(features, columns=[val[0] for val in dtype])
 cleaned_df = df.dropna(how="any")
 
 # Once all data is processed, save it to CSV
-cleaned_df.to_csv("template/features/features_training.csv", index=False)
+cleaned_df.to_csv("final/features/features_training.csv", index=False)

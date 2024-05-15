@@ -9,7 +9,7 @@ import pickle
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Load data
-data = pd.read_csv("template/features/features_training.csv")
+data = pd.read_csv("final/features/features_training.csv")
 
 # Create binary label indicating cancerous or not
 data["cancerous"] = data["diagnostic"].isin(["MEL", "SCC", "BCC"])
