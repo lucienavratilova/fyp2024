@@ -5,14 +5,14 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from template.extract_features import *  # our feature extraction
+from final.extract_features import *  # our feature extraction
 
 
 # The function that should classify new images.
 def classify(img:str, mask:str):
     # Resize the image etc, if you did that during training
 
-    model = pickle.load(open("classifier_GroupB.sav", "rb"))
+    model = pickle.load(open("logistic_regression_classifier.sav", "rb"))
     # Extract features (the same ones that you used for training)
     x = extract_features(img, mask)
     # Define column names
